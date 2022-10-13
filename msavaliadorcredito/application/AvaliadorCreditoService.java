@@ -1,12 +1,13 @@
-package io.github.fernandine.msavaliadorcredito.services;
+package io.github.cursodsousa.msavaliadorcredito.application;
 
 import feign.FeignException;
-import io.github.fernandine.msavaliadorcredito.domain.model.*;
-import io.github.fernandine.msavaliadorcredito.infra.clients.CartoesResourceClient;
-import io.github.fernandine.msavaliadorcredito.infra.clients.ClienteResourceClient;
-import io.github.fernandine.msavaliadorcredito.infra.mqueue.SolicitacaoEmissaoCartaoPublisher;
-import io.github.fernandine.msavaliadorcredito.resouces.exceptions.DadosClienteNotFoundException;
-import io.github.fernandine.msavaliadorcredito.resouces.exceptions.ErroComunicacaoException;
+import io.github.cursodsousa.msavaliadorcredito.application.ex.DadosClienteNotFoundException;
+import io.github.cursodsousa.msavaliadorcredito.application.ex.ErroComunicacaoMicroservicesException;
+import io.github.cursodsousa.msavaliadorcredito.application.ex.ErroSolicitacaoCartaoException;
+import io.github.cursodsousa.msavaliadorcredito.domain.model.*;
+import io.github.cursodsousa.msavaliadorcredito.infra.clients.CartoesResourceClient;
+import io.github.cursodsousa.msavaliadorcredito.infra.clients.ClienteResourceClient;
+import io.github.cursodsousa.msavaliadorcredito.infra.mqueue.SolicitacaoEmissaoCartaoPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +27,7 @@ public class AvaliadorCreditoService {
     private final SolicitacaoEmissaoCartaoPublisher emissaoCartaoPublisher;
 
     public SituacaoCliente obterSituacaoCliente(String cpf)
-            throws DadosClienteNotFoundException, ErroComunicacaoException {
+            throws DadosClienteNotFoundException, ErroComunicacaoMicroservicesException{
         try {
             ResponseEntity<DadosCliente> dadosClienteResponse = clientesClient.dadosCliente(cpf);
             ResponseEntity<List<CartaoCliente>> cartoesResponse = cartoesClient.getCartoesByCliente(cpf);
@@ -36,18 +38,18 @@ public class AvaliadorCreditoService {
                     .cartoes(cartoesResponse.getBody())
                     .build();
 
-        } catch (FeignException.FeignClientException e) {
+        }catch (FeignException.FeignClientException e){
             int status = e.status();
-            if (HttpStatus.NOT_FOUND.value() == status) {
+            if(HttpStatus.NOT_FOUND.value() == status){
                 throw new DadosClienteNotFoundException();
             }
-            throw new ErroComunicacaoException(e.getMessage(), status);
+            throw new ErroComunicacaoMicroservicesException(e.getMessage(), status);
         }
     }
 
     public RetornoAvaliacaoCliente realizarAvaliacao(String cpf, Long renda)
-            throws DadosClienteNotFoundException, ErroComunicacaoException {
-        try {
+            throws DadosClienteNotFoundException, ErroComunicacaoMicroservicesException{
+        try{
             ResponseEntity<DadosCliente> dadosClienteResponse = clientesClient.dadosCliente(cpf);
             ResponseEntity<List<Cartao>> cartoesResponse = cartoesClient.getCartoesRendaAteh(renda);
 
@@ -71,12 +73,22 @@ public class AvaliadorCreditoService {
 
             return new RetornoAvaliacaoCliente(listaCartoesAprovados);
 
-        } catch (FeignException.FeignClientException e) {
+        }catch (FeignException.FeignClientException e){
             int status = e.status();
-            if (HttpStatus.NOT_FOUND.value() == status) {
+            if(HttpStatus.NOT_FOUND.value() == status){
                 throw new DadosClienteNotFoundException();
             }
-            throw new ErroComunicacaoException(e.getMessage(), status);
+            throw new ErroComunicacaoMicroservicesException(e.getMessage(), status);
+        }
+    }
+
+    public ProtocoloSolicitacaoCartao solicitarEmissaoCartao(DadosSolicitacaoEmissaoCartao dados){
+        try{
+            emissaoCartaoPublisher.solicitarCartao(dados);
+            var protocolo = UUID.randomUUID().toString();
+            return new ProtocoloSolicitacaoCartao(protocolo);
+        }catch (Exception e){
+            throw new ErroSolicitacaoCartaoException(e.getMessage());
         }
     }
 }

@@ -1,4 +1,4 @@
-package io.github.fernandine.msavaliadorcredito;
+package io.github.cursodsousa.msavaliadorcredito;
 
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
@@ -10,10 +10,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableEurekaClient
 @EnableFeignClients
 @EnableRabbit
-public class MsavaliadorcreditoApplication {
+public class AvaliadorCreditoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MsavaliadorcreditoApplication.class, args);
+		SpringApplication.run(AvaliadorCreditoApplication.class, args);
 	}
 
 }
