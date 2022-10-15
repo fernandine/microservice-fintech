@@ -3,6 +3,7 @@ package io.github.fernandine.mscartoes.infra.mqueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fernandine.mscartoes.domain.Cartao;
 import io.github.fernandine.mscartoes.domain.ClienteCartao;
+import io.github.fernandine.mscartoes.domain.DadosSolicitacaoEmissaoCartao;
 import io.github.fernandine.mscartoes.repositories.CartaoRepository;
 import io.github.fernandine.mscartoes.repositories.ClienteCartaoRepository;
 import lombok.RequiredArgsConstructor;

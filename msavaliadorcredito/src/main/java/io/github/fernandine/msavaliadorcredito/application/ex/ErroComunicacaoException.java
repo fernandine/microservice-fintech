@@ -1,4 +1,4 @@
-package io.github.fernandine.msavaliadorcredito.resouces.exceptions;
+package io.github.fernandine.msavaliadorcredito.application.ex;
 
 import lombok.Getter;
 @Getter

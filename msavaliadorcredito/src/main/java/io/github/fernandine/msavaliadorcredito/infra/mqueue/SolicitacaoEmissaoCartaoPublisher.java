@@ -2,6 +2,7 @@ package io.github.fernandine.msavaliadorcredito.infra.mqueue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.fernandine.msavaliadorcredito.domain.model.DadosSolicitacaoEmissaoCartao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

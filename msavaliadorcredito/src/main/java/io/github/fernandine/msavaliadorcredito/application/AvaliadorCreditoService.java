@@ -1,12 +1,14 @@
-package io.github.fernandine.msavaliadorcredito.services;
+package io.github.fernandine.msavaliadorcredito.application;
 
 import feign.FeignException;
+import io.github.fernandine.msavaliadorcredito.domain.model.ProtocoloSolicitacaoCartao;
 import io.github.fernandine.msavaliadorcredito.domain.model.*;
 import io.github.fernandine.msavaliadorcredito.infra.clients.CartoesResourceClient;
 import io.github.fernandine.msavaliadorcredito.infra.clients.ClienteResourceClient;
 import io.github.fernandine.msavaliadorcredito.infra.mqueue.SolicitacaoEmissaoCartaoPublisher;
-import io.github.fernandine.msavaliadorcredito.resouces.exceptions.DadosClienteNotFoundException;
-import io.github.fernandine.msavaliadorcredito.resouces.exceptions.ErroComunicacaoException;
+import io.github.fernandine.msavaliadorcredito.application.ex.DadosClienteNotFoundException;
+import io.github.fernandine.msavaliadorcredito.application.ex.ErroComunicacaoException;
+import io.github.fernandine.msavaliadorcredito.application.ex.ErroSolicitacaoCartaoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,4 +82,15 @@ public class AvaliadorCreditoService {
             throw new ErroComunicacaoException(e.getMessage(), status);
         }
     }
+
+    public ProtocoloSolicitacaoCartao solicitarEmissaoCartao(DadosSolicitacaoEmissaoCartao dados) {
+        try {
+            emissaoCartaoPublisher.solicitarCartao(dados);
+            var protocolo = UUID.randomUUID().toString();
+            return new ProtocoloSolicitacaoCartao(protocolo);
+        } catch (Exception e) {
+            throw new ErroSolicitacaoCartaoException(e.getMessage());
+        }
+    }
+
 }

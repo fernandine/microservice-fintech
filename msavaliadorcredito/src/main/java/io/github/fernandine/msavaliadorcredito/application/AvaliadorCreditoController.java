@@ -1,11 +1,9 @@
-package io.github.fernandine.msavaliadorcredito.resouces;
+package io.github.fernandine.msavaliadorcredito.application;
 
-import io.github.fernandine.msavaliadorcredito.domain.model.DadosAvaliacao;
-import io.github.fernandine.msavaliadorcredito.domain.model.RetornoAvaliacaoCliente;
-import io.github.fernandine.msavaliadorcredito.domain.model.SituacaoCliente;
-import io.github.fernandine.msavaliadorcredito.resouces.exceptions.DadosClienteNotFoundException;
-import io.github.fernandine.msavaliadorcredito.resouces.exceptions.ErroComunicacaoException;
-import io.github.fernandine.msavaliadorcredito.services.AvaliadorCreditoService;
+import io.github.fernandine.msavaliadorcredito.application.ex.DadosClienteNotFoundException;
+import io.github.fernandine.msavaliadorcredito.application.ex.ErroComunicacaoException;
+import io.github.fernandine.msavaliadorcredito.application.ex.ErroSolicitacaoCartaoException;
+import io.github.fernandine.msavaliadorcredito.domain.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,4 +46,14 @@ public class AvaliadorCreditoController {
         }
     }
 
+    @PostMapping("solicitacoes-cartao")
+    public ResponseEntity solicitarCartao(@RequestBody DadosSolicitacaoEmissaoCartao dados){
+        try{
+            ProtocoloSolicitacaoCartao protocoloSolicitacaoCartao = avaliadorCreditoService
+                    .solicitarEmissaoCartao(dados);
+            return ResponseEntity.ok(protocoloSolicitacaoCartao);
+        }catch (ErroSolicitacaoCartaoException e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }
