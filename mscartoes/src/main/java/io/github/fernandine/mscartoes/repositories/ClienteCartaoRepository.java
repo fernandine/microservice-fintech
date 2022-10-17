@@ -1,5 +1,6 @@
 package io.github.fernandine.mscartoes.repositories;
 
+
 import io.github.fernandine.mscartoes.domain.ClienteCartao;
 import org.springframework.data.jpa.repository.JpaRepository;
 

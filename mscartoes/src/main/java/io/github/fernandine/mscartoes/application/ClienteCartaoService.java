@@ -1,4 +1,4 @@
-package io.github.fernandine.mscartoes.services;
+package io.github.fernandine.mscartoes.application;
 
 import io.github.fernandine.mscartoes.domain.ClienteCartao;
 import io.github.fernandine.mscartoes.repositories.ClienteCartaoRepository;
@@ -13,8 +13,7 @@ public class ClienteCartaoService {
 
     private final ClienteCartaoRepository repository;
 
-    public List<ClienteCartao> listCartoesByCpf(String cpf) {
+    public List<ClienteCartao> listCartoesByCpf(String cpf){
         return repository.findByCpf(cpf);
     }
-
 }

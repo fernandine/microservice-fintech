@@ -1,6 +1,5 @@
 package io.github.fernandine.mscartoes.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
